@@ -1,204 +1,157 @@
 import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { PawPrint, Trees, Satellite, Menu, X, Youtube, Instagram, ChevronDown } from "lucide-react"
+import { Menu, X, ChevronDown, Heart, MapPin, Clock, Camera, Upload } from "lucide-react"
 import { AnimatedText } from "@/components/animated-text"
-import { CustomDroneIcon } from "@/components/drone-icon"
-import { WorldMap } from "@/components/world-map"
-import { experiences } from "@/lib/experience-data"
-import type { Experience } from "@/lib/experience-data"
+import Icon from "@/components/ui/icon"
 
-function AnimatedCounter({ value, suffix = "" }: { value: string; suffix?: string }) {
-  const [displayValue, setDisplayValue] = useState("0")
-  const ref = useRef<HTMLDivElement>(null)
+const PHOTO_SLOTS = [
+  { id: "hero", label: "Главное фото (герой)", aspect: "aspect-[4/3]" },
+  { id: "photo1", label: "Фото 1", aspect: "aspect-square" },
+  { id: "photo2", label: "Фото 2", aspect: "aspect-square" },
+  { id: "photo3", label: "Фото 3", aspect: "aspect-square" },
+  { id: "photo4", label: "Фото 4", aspect: "aspect-square" },
+]
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const numericStr = value.replace(/[^0-9.]/g, "")
-          const targetNum = Number.parseFloat(numericStr)
-          const unit = value.replace(/[0-9.]/g, "")
+function PhotoSlot({
+  slotId,
+  label,
+  aspect,
+  photos,
+  onUpload,
+  className = "",
+}: {
+  slotId: string
+  label: string
+  aspect: string
+  photos: Record<string, string>
+  onUpload: (id: string, url: string) => void
+  className?: string
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const src = photos[slotId]
 
-          let current = 0
-          const increment = targetNum / 60
-          const interval = setInterval(() => {
-            current += increment
-            if (current >= targetNum) {
-              setDisplayValue(`${targetNum}${unit}`)
-              clearInterval(interval)
-            } else {
-              setDisplayValue(`${current.toFixed(1)}${unit}`.replace(".0", ""))
-            }
-          }, 16)
-
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.5 },
-    )
-
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [value])
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const url = URL.createObjectURL(file)
+    onUpload(slotId, url)
+  }
 
   return (
-    <div className="text-8xl" ref={ref}>
-      {displayValue}
+    <div
+      className={`relative ${aspect} rounded-2xl overflow-hidden cursor-pointer group ${className}`}
+      onClick={() => inputRef.current?.click()}
+    >
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      {src ? (
+        <>
+          <img src={src} alt={label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-2 text-white">
+              <Camera className="w-7 h-7" />
+              <span className="text-xs font-medium">Заменить фото</span>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="w-full h-full bg-[#f0ebe3] flex flex-col items-center justify-center gap-3 text-[#6B6560] hover:bg-[#e8e1d8] transition-colors duration-300">
+          <Upload className="w-8 h-8 opacity-50" />
+          <span className="text-xs text-center px-4 leading-snug opacity-70">{label}</span>
+        </div>
+      )}
     </div>
   )
 }
 
-export default function VerdantPage() {
+export default function WeddingPage() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrollY, setScrollY] = useState(0)
-  const [selectedFeature, setSelectedFeature] = useState(0)
-  const [imageFade, setImageFade] = useState(true)
-  const [autoRotationKey, setAutoRotationKey] = useState(0)
   const [dynamicWordIndex, setDynamicWordIndex] = useState(0)
   const [wordFade, setWordFade] = useState(true)
-  const [dashboardScrollOffset, setDashboardScrollOffset] = useState(0)
-  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null)
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
-  const dashboardRef = useRef<HTMLDivElement>(null)
-  const heroRef = useRef<HTMLDivElement>(null)
+  const [photos, setPhotos] = useState<Record<string, string>>({})
+  const [rsvpName, setRsvpName] = useState("")
+  const [rsvpGuests, setRsvpGuests] = useState("1")
+  const [rsvpSent, setRsvpSent] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
 
-  const dynamicWords = ["леса", "природу", "животных", "экосистемы", "биоразнообразие", "дикую жизнь", "среду обитания"]
+  const dynamicWords = ["любовь", "радость", "вас", "весну", "счастье"]
 
   useEffect(() => {
-    const wordInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setWordFade(false)
       setTimeout(() => {
         setDynamicWordIndex((prev) => (prev + 1) % dynamicWords.length)
         setWordFade(true)
       }, 300)
     }, 3000)
-
-    return () => clearInterval(wordInterval)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY)
-
-      if (dashboardRef.current) {
-        const dashboardRect = dashboardRef.current.getBoundingClientRect()
-        const viewportHeight = window.innerHeight
-
-        const rotationStart = viewportHeight * 0.8
-        const rotationEnd = viewportHeight * 0.2
-
-        if (dashboardRect.top >= rotationStart) {
-          setDashboardScrollOffset(0)
-        } else if (dashboardRect.top <= rotationEnd) {
-          setDashboardScrollOffset(15)
-        } else {
-          const scrollRange = rotationStart - rotationEnd
-          const currentProgress = rotationStart - dashboardRect.top
-          const rotationProgress = currentProgress / scrollRange
-          const tiltAngle = rotationProgress * 15
-          setDashboardScrollOffset(tiltAngle)
-        }
-      }
-    }
-
-    handleScroll()
+    const handleScroll = () => setScrollY(window.scrollY)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   useEffect(() => {
     setIsLoaded(true)
-
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-in")
-          }
+          if (entry.isIntersecting) entry.target.classList.add("animate-in")
         })
       },
       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
     )
-
     const elements = document.querySelectorAll(".animate-on-scroll")
     elements.forEach((el) => observerRef.current?.observe(el))
-
     return () => observerRef.current?.disconnect()
   }, [])
 
-  useEffect(() => {
-    const featuresCount = 4
-
-    const interval = setInterval(() => {
-      setImageFade(false)
-      setTimeout(() => {
-        setSelectedFeature((prev) => (prev + 1) % featuresCount)
-        setImageFade(true)
-      }, 300)
-    }, 6000)
-
-    return () => clearInterval(interval)
-  }, [autoRotationKey])
+  const handleUpload = (id: string, url: string) => {
+    setPhotos((prev) => ({ ...prev, [id]: url }))
+  }
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
     setIsMenuOpen(false)
   }
 
   return (
     <div className="relative min-h-screen bg-[#F9F6F1] text-[#1A1713] overflow-x-hidden">
-      <header className="fixed top-6 left-6 md:w-auto md:right-auto right-6 z-40 border border-black/10 backdrop-blur-md bg-[#F9F6F1]/80 rounded-[16px]">
+
+      {/* HEADER */}
+      <header className="fixed top-6 left-6 md:right-auto right-6 z-40 border border-black/10 backdrop-blur-md bg-[#F9F6F1]/80 rounded-[16px]">
         <div className="w-full mx-auto px-6">
-          <div className="flex items-center gap-6 md:h-14 h-14">
+          <div className="flex items-center gap-6 h-14">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="text-lg md:text-xl font-semibold font-mono hover:text-pink-400 transition-colors duration-300"
+              className="text-lg md:text-xl font-semibold font-serif hover:text-pink-500 transition-colors duration-300 tracking-wide"
             >
-              VERDANT
+              М & А
             </button>
-
             <nav className="hidden md:flex items-center gap-8">
-              <button
-                onClick={() => scrollToSection("metrics")}
-                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
-              >
-                Результаты
-              </button>
-              <button
-                onClick={() => scrollToSection("map")}
-                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
-              >
-                Проекты
-              </button>
-              <button
-                onClick={() => scrollToSection("narrative")}
-                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
-              >
-                Технологии
-              </button>
-              <button
-                onClick={() => scrollToSection("faq")}
-                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
-              >
-                Вопросы
-              </button>
-              <button
-                onClick={() => scrollToSection("cta")}
-                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
-              >
-                Участвовать
-              </button>
+              {[
+                { label: "Детали", id: "details" },
+                { label: "Программа", id: "schedule" },
+                { label: "Галерея", id: "gallery" },
+                { label: "Вопросы", id: "faq" },
+                { label: "Подтвердить", id: "rsvp" },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
+                >
+                  {item.label}
+                </button>
+              ))}
             </nav>
-
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden ml-auto p-2 hover:bg-black/5 rounded-lg transition-colors duration-300"
-              aria-label="Toggle menu"
+              className="md:hidden ml-auto p-2 hover:bg-black/5 rounded-lg transition-colors"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -206,461 +159,266 @@ export default function VerdantPage() {
         </div>
       </header>
 
+      {/* MOBILE MENU */}
       {isMenuOpen && (
         <div className="fixed inset-0 bg-[#F9F6F1]/95 backdrop-blur-md z-50 flex flex-col items-start justify-end pb-20 pt-20 px-6">
-          <div className="flex flex-col gap-8 items-start text-left w-full">
-            <button
-              onClick={() => scrollToSection("metrics")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
-            >
-              Результаты
-            </button>
-            <button
-              onClick={() => scrollToSection("map")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
-            >
-              Проекты
-            </button>
-            <button
-              onClick={() => scrollToSection("narrative")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
-            >
-              Технологии
-            </button>
-            <button
-              onClick={() => scrollToSection("faq")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
-            >
-              Вопросы
-            </button>
-            <button
-              onClick={() => scrollToSection("cta")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
-            >
-              Участвовать
-            </button>
+          <div className="flex flex-col gap-8 items-start w-full">
+            {[
+              { label: "Детали", id: "details" },
+              { label: "Программа", id: "schedule" },
+              { label: "Галерея", id: "gallery" },
+              { label: "Вопросы", id: "faq" },
+              { label: "Подтвердить", id: "rsvp" },
+            ].map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="font-serif text-5xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
         </div>
       )}
 
+      {/* HERO */}
       <section
         ref={heroRef}
         className={`relative min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-16 md:pt-32 md:pb-24 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${isLoaded ? "scale-100 opacity-100" : "scale-[1.03] opacity-0"}`}
-        style={{
-          backgroundImage: `url('/hero-landscape.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
       >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            transform: `translateY(${scrollY * 0.5}px)`,
-            backgroundImage: `url('/hero-landscape.png')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F9F6F1] via-[#F9F6F1]/70 to-transparent pointer-events-none" />
+        {photos["hero"] ? (
+          <>
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                transform: `translateY(${scrollY * 0.4}px)`,
+                backgroundImage: `url(${photos["hero"]})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#F9F6F1] via-[#F9F6F1]/50 to-transparent pointer-events-none" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-[#F9F6F1] to-rose-50 pointer-events-none" />
+        )}
 
         <div
           className="max-w-[1120px] w-full mx-auto relative z-10"
-          style={{
-            transform: `translateY(${scrollY * 0.2}px)`,
-          }}
+          style={{ transform: `translateY(${scrollY * 0.15}px)` }}
         >
-          <div className="text-center mb-8 md:mb-12">
-            <h1 className="font-serif text-[44px] leading-[1.1] md:text-[72px] md:leading-[1.05] font-medium mb-6 text-balance">
+          <div className="text-center mb-10 md:mb-16">
+            {/* Декоративный элемент */}
+            <div className="flex items-center justify-center gap-3 mb-8 stagger-reveal">
+              <div className="h-px w-16 bg-pink-300" />
+              <Heart className="w-4 h-4 text-pink-400 fill-pink-400" />
+              <div className="h-px w-16 bg-pink-300" />
+            </div>
+
+            <h1 className="font-serif mb-6 text-balance">
               <span
-                className={`block stagger-reveal text-7xl font-light transition-all duration-500 md:text-8xl ${
+                className={`block stagger-reveal text-6xl md:text-8xl font-light transition-all duration-500 ${
                   wordFade ? "opacity-100 blur-0" : "opacity-0 blur-lg"
                 }`}
               >
-                Защитим <AnimatedText key={dynamicWordIndex} text={dynamicWords[dynamicWordIndex]} delay={0} />
+                Разделите <AnimatedText key={dynamicWordIndex} text={dynamicWords[dynamicWordIndex]} delay={0} />
               </span>
-              <span className="block stagger-reveal text-7xl font-light md:text-8xl" style={{ animationDelay: "90ms" }}>
-                в масштабе
+              <span className="block stagger-reveal text-6xl md:text-8xl font-light" style={{ animationDelay: "90ms" }}>
+                с нами
               </span>
             </h1>
-            <p
-              className="text-[#6B6560] text-base md:text-lg max-w-[520px] mx-auto mb-8 leading-relaxed stagger-reveal"
-              style={{ animationDelay: "180ms" }}
-            >
-              Мониторинг лесов в реальном времени с помощью ИИ. Обнаружение угроз, отслеживание биоразнообразия, сохранение природы для будущих поколений.
+
+            <p className="text-[#6B6560] text-base md:text-xl max-w-[520px] mx-auto mb-3 leading-relaxed stagger-reveal" style={{ animationDelay: "180ms" }}>
+              Михаил и Анна
             </p>
-            <div className="stagger-reveal" style={{ animationDelay: "270ms" }}>
-              <Button className="glass-button px-8 py-6 text-base rounded-full bg-black/5 border border-black/10 hover:bg-black/10 hover:border-black/20 transition-all duration-300 text-[#1A1713]">
-                Начать защиту
-              </Button>
-            </div>
-          </div>
+            <p className="text-pink-500 font-serif text-2xl md:text-3xl mb-10 stagger-reveal font-light" style={{ animationDelay: "220ms" }}>
+              12 июля 2025
+            </p>
 
-          <div className="mt-12 md:mt-20 stagger-reveal" style={{ animationDelay: "360ms" }} ref={dashboardRef}>
-            <div style={{ perspective: "1200px" }}>
-              <div
-                className="relative aspect-[16/10] md:aspect-[16/9] rounded-[24px] overflow-hidden"
-                style={{
-                  transform: `rotateX(${dashboardScrollOffset}deg)`,
-                  transformStyle: "preserve-3d",
-                  transition: "transform 0.05s linear",
-                }}
+            <div className="stagger-reveal flex flex-col sm:flex-row gap-4 justify-center" style={{ animationDelay: "270ms" }}>
+              <button
+                onClick={() => scrollToSection("rsvp")}
+                className="px-8 py-4 bg-[#1A1713] text-[#F9F6F1] rounded-full text-sm font-medium hover:bg-[#2d2925] transition-all duration-300"
               >
-                <img
-                  src="/dashboard-screenshot.png"
-                  alt="Панель мониторинга VERDANT"
-                  className="object-cover dashboard-image w-full h-auto"
-                />
-              </div>
+                Подтвердить участие
+              </button>
+              <button
+                onClick={() => scrollToSection("details")}
+                className="px-8 py-4 bg-black/5 border border-black/10 rounded-full text-sm font-medium hover:bg-black/10 transition-all duration-300"
+              >
+                Узнать детали
+              </button>
             </div>
+          </div>
+
+          {/* Hero photo upload */}
+          <div className="mt-10 md:mt-16 stagger-reveal max-w-3xl mx-auto" style={{ animationDelay: "360ms" }}>
+            <PhotoSlot slotId="hero" label="Нажмите, чтобы добавить главное фото" aspect="aspect-[16/9]" photos={photos} onUpload={handleUpload} className="rounded-3xl shadow-xl" />
           </div>
         </div>
       </section>
 
-      <section className="relative py-12 border-y border-black/5 bg-[#F9F6F1] overflow-hidden md:py-8 md:pt-8 md:pb-4">
-        <div className="w-full">
-          <p className="text-center text-xs md:text-sm uppercase tracking-[0.2em] text-[#6B6560] mb-8">
-            Нам доверяют ведущие природоохранные организации
-          </p>
-          <div className="logo-marquee">
-            <div className="logo-marquee-content">
-              {[
-                "/logos/frame-11.png",
-                "/logos/frame-55.png",
-                "/logos/frame-4.png",
-                "/logos/frame-6.png",
-                "/logos/frame-8.png",
-                "/logos/frame-2.png",
-                "/logos/frame-3.png",
-                "/logos/frame-7.png",
-                "/logos/frame-11.png",
-                "/logos/frame-55.png",
-                "/logos/frame-4.png",
-                "/logos/frame-6.png",
-                "/logos/frame-8.png",
-                "/logos/frame-2.png",
-                "/logos/frame-3.png",
-                "/logos/frame-7.png",
-              ].map((logo, i) => (
-                <div key={i} className="px-8 md:px-12 flex items-center justify-center flex-shrink-0">
-                  <img
-                    src={logo || "/placeholder.svg"}
-                    alt={`Логотип партнера ${i + 1}`}
-                    className="h-32 md:h-24 w-auto object-contain opacity-60 hover:opacity-60 transition-all duration-300 brightness-0"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="metrics" className="relative py-20 md:py-32 px-4 animate-on-scroll md:pt-24 md:pb-20">
+      {/* DETAILS */}
+      <section id="details" className="relative py-20 md:py-32 px-4 animate-on-scroll">
         <div className="max-w-[1120px] w-full mx-auto">
-          <h2 className="font-serif text-[32px] leading-[1.15] md:text-[48px] md:leading-[1.1] font-medium mb-6 md:mb-8 text-center text-balance">
-            Природоохранный{" "}
-            <span
-              className="inline-block"
-              style={{
-                background: "linear-gradient(135deg, #d9a7c7 0%, #fffcdc 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              результат
-            </span>{" "}
-            в масштабе
-          </h2>
+          <div className="text-center mb-16">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#6B6560] mb-4 flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+              ДЕТАЛИ ТОРЖЕСТВА
+            </div>
+            <h2 className="font-serif text-[32px] md:text-[48px] font-medium mb-4">
+              Летняя свадьба{" "}
+              <span style={{ background: "linear-gradient(135deg, #e8849a 0%, #c4a882 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                на природе
+              </span>
+            </h2>
+            <p className="text-[#6B6560] max-w-[520px] mx-auto text-sm md:text-base leading-relaxed">
+              Мы с радостью приглашаем вас разделить с нами этот особенный день среди зелени, свежего воздуха и тёплых объятий близких.
+            </p>
+          </div>
 
-          <p className="text-[#6B6560] text-sm md:text-base mb-12 md:mb-16 text-center max-w-[600px] mx-auto leading-relaxed">
-            Нам доверяют природоохранные организации по всему миру. Работаем на технологиях, созданных для природы.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 max-w-[800px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { label: "ЗАЩИЩЕНО ЛЕСОВ", value: "2.4M", desc: "гектаров по всему миру", color: "pink" },
-              { label: "ВИДОВ НА МОНИТОРИНГЕ", value: "12K+", desc: "диких животных", color: "purple" },
-              { label: "ПОГЛОЩЕНО УГЛЕРОДА", value: "18M", desc: "тонн CO2", color: "pink" },
-              { label: "ТОЧНОСТЬ ДЕТЕКЦИИ", value: "99.4%", desc: "обнаружения угроз", color: "purple" },
-            ].map((metric, i) => (
-              <div
-                key={i}
-                className="p-6 md:p-10 text-center border border-black/10 border-t-0 border-b border-l-0 border-r-0 md:py-10 md:pb-20"
-              >
-                <div
-                  className={`text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-4 flex items-center justify-center gap-2`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${metric.color === "pink" ? "bg-pink-500/60" : "bg-purple-500/60"}`}
-                  />
-                  {metric.label}
+              {
+                icon: "Calendar",
+                title: "Дата",
+                main: "12 июля 2025",
+                sub: "Суббота",
+              },
+              {
+                icon: "Clock",
+                title: "Время",
+                main: "16:00",
+                sub: "Сбор гостей с 15:30",
+              },
+              {
+                icon: "MapPin",
+                title: "Место",
+                main: "Усадьба Зелёный Дол",
+                sub: "Подмосковье, 45 км от МКАД",
+              },
+            ].map((item, i) => (
+              <div key={i} className="p-8 border border-black/10 rounded-2xl text-center hover:border-pink-200 hover:bg-pink-50/30 transition-all duration-300">
+                <div className="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center mx-auto mb-5">
+                  <Icon name={item.icon} size={20} className="text-pink-500" />
                 </div>
-                <div className="font-serif text-[48px] md:text-[72px] leading-none font-medium">
-                  <AnimatedCounter value={metric.value} />
-                </div>
-                <div className="text-[11px] md:text-xs text-[#6B6560] mt-3">{metric.desc}</div>
+                <div className="text-[10px] uppercase tracking-[0.15em] text-[#6B6560] mb-2">{item.title}</div>
+                <div className="font-serif text-xl md:text-2xl font-medium mb-1">{item.main}</div>
+                <div className="text-sm text-[#6B6560]">{item.sub}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="map" className="relative py-20 md:py-32 animate-on-scroll bg-[#F9F6F1]">
-        <div className="text-center mb-12 md:mb-16 px-4">
-          <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-6 flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
-            ГЛОБАЛЬНЫЙ ОХВАТ
+      {/* SCHEDULE */}
+      <section id="schedule" className="relative py-20 md:py-32 px-4 animate-on-scroll bg-[#F4EFE8]">
+        <div className="max-w-[800px] w-full mx-auto">
+          <div className="text-center mb-14">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#6B6560] mb-4 flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+              ПРОГРАММА ДНЯ
+            </div>
+            <h2 className="font-serif text-[32px] md:text-[48px] font-medium">
+              Как пройдёт{" "}
+              <span style={{ background: "linear-gradient(135deg, #e8849a 0%, #c4a882 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                наш день
+              </span>
+            </h2>
           </div>
-          <h2 className="font-serif text-[32px] leading-[1.15] md:text-[48px] md:leading-[1.1] font-medium mb-6 text-balance">
-            Проекты по всему миру
-          </h2>
-          <p className="text-[#6B6560] text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
-            Мониторинг и защита критически важных лесных экосистем на пяти континентах
-          </p>
-        </div>
 
-        <WorldMap
-          experiences={experiences}
-          selectedExperience={selectedExperience}
-          onSelectExperience={setSelectedExperience}
-        />
-      </section>
-
-      <section id="narrative" className="relative py-20 md:py-32 px-4 animate-on-scroll">
-        <div className="max-w-[1120px] w-full mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-stretch">
-            <div className="max-w-[720px]">
-              <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-6 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
-                ТЕХНОЛОГИИ СОХРАНЕНИЯ
-              </div>
-              <h2 className="font-serif text-[36px] leading-[1.15] md:text-[56px] md:leading-[1.1] font-medium mb-8 text-balance">
-                Каждая экосистема{" "}
-                <span
-                  className="inline-block"
-                  style={{
-                    background: "linear-gradient(135deg, #d9a7c7 0%, #fffcdc 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                  }}
-                >
-                  важна
-                </span>
-              </h2>
-              <p className="text-[#6B6560] text-base md:text-lg leading-relaxed mb-12">
-                Наши спутниковые и ИИ-технологии отслеживают биоразнообразие, выявляют незаконные вырубки, анализируют паттерны обезлесения и оповещают команды в реальном времени. Сохранение со скоростью, которую требует природа.
-              </p>
-
-              <div className="md:hidden mb-8">
-                <div className="rounded-[24px] p-1 w-full aspect-square overflow-hidden">
-                  <img
-                    src={
-                      [
-                        "/drone.png",
-                        "/real-time-satellite.png",
-                        "/biodiversity-tracking.png",
-                        "/deforestation-detect.png",
-                      ][selectedFeature] || "/placeholder.svg"
-                    }
-                    alt="Превью функции"
-                    className={`w-full h-full object-cover rounded-[20px] transition-opacity duration-300 ${
-                      imageFade ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
+          <div className="space-y-0">
+            {[
+              { time: "15:30", title: "Сбор гостей", desc: "Встреча, шампанское и лёгкие закуски в саду" },
+              { time: "16:00", title: "Церемония", desc: "Торжественная регистрация под открытым небом среди цветов и зелени" },
+              { time: "17:00", title: "Фотосессия", desc: "Прогулка по территории усадьбы и первые совместные фото" },
+              { time: "18:00", title: "Банкет", desc: "Праздничный ужин с живой музыкой и тостами" },
+              { time: "20:00", title: "Танцы", desc: "Первый танец молодожёнов и танцпол до утра" },
+              { time: "22:00", title: "Фейерверк", desc: "Яркий финал незабываемого вечера" },
+            ].map((item, i, arr) => (
+              <div key={i} className="flex gap-6 relative">
+                <div className="flex flex-col items-center">
+                  <div className="w-10 h-10 rounded-full border-2 border-pink-300 bg-[#F4EFE8] flex items-center justify-center flex-shrink-0 z-10">
+                    <div className="w-2.5 h-2.5 rounded-full bg-pink-400" />
+                  </div>
+                  {i < arr.length - 1 && <div className="w-px flex-1 bg-pink-200 my-1" />}
+                </div>
+                <div className={`pb-8 ${i === arr.length - 1 ? "" : ""}`}>
+                  <div className="text-xs text-pink-500 font-medium mb-1 mt-2">{item.time}</div>
+                  <div className="font-serif text-lg md:text-xl font-medium mb-1">{item.title}</div>
+                  <div className="text-sm text-[#6B6560] leading-relaxed">{item.desc}</div>
                 </div>
               </div>
-
-              <div className="space-y-6">
-                {[
-                  {
-                    title: "Дроны-разведчики",
-                    desc: "Аэросъемка для учета дикой природы и видового разнообразия",
-                    icon: CustomDroneIcon,
-                    image: "/drone.png",
-                  },
-                  {
-                    title: "Мониторинг 24/7",
-                    desc: "Круглосуточное спутниковое наблюдение с мгновенными оповещениями",
-                    icon: Satellite,
-                    image: "/real-time-satellite.png",
-                  },
-                  {
-                    title: "Учет биоразнообразия",
-                    desc: "Картирование и мониторинг популяций животных по регионам",
-                    icon: PawPrint,
-                    image: "/biodiversity-tracking.png",
-                  },
-                  {
-                    title: "Защита от вырубки",
-                    desc: "Обнаружение угроз до их эскалации",
-                    icon: Trees,
-                    image: "/deforestation-detect.png",
-                  },
-                ].map((feature, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setImageFade(false)
-                      setTimeout(() => {
-                        setSelectedFeature(i)
-                        setImageFade(true)
-                        setAutoRotationKey((prev) => prev + 1)
-                      }, 300)
-                    }}
-                    className={`relative w-full text-left flex gap-4 items-start p-5 transition-all duration-300 rounded-xs py-4 overflow-hidden ${
-                      selectedFeature === i ? "border border-black/20 bg-white/40" : "border border-black/10"
-                    }`}
-                  >
-                    <feature.icon
-                      className={`w-6 h-6 flex-shrink-0 mt-1 transition-colors ${
-                        selectedFeature === i ? "text-green-400" : "text-green-500/60"
-                      }`}
-                    />
-                    <div className="flex-1">
-                      <h3 className="text-base md:text-lg font-medium mb-1">{feature.title}</h3>
-                      <p className="text-sm md:text-base text-[#6B6560]">{feature.desc}</p>
-                    </div>
-                    {selectedFeature === i && (
-                      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/10">
-                        <div className="h-full bg-pink-400 progress-bar" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="hidden md:flex items-stretch justify-center">
-              <div className="relative w-full h-full min-h-[500px]">
-                {[
-                  {
-                    title: "Дроны-разведчики",
-                    image: "/drone.png",
-                  },
-                  {
-                    title: "Мониторинг 24/7",
-                    image: "/real-time-satellite.png",
-                  },
-                  {
-                    title: "Учет биоразнообразия",
-                    image: "/biodiversity-tracking.png",
-                  },
-                  {
-                    title: "Защита от вырубки",
-                    image: "/deforestation-detect.png",
-                  },
-                ].map((feature, i) => {
-                  const positionInStack = (i - selectedFeature + 4) % 4
-                  const isActive = positionInStack === 0
-
-                  return (
-                    <div
-                      key={i}
-                      className="absolute inset-0 p-1 transition-all duration-600 ease-out"
-                      style={{
-                        zIndex: 4 - positionInStack,
-                        transform: `translateX(${positionInStack * 16}px) scale(${1 - positionInStack * 0.02})`,
-                        opacity: isActive ? (imageFade ? 1 : 1) : 0.6 - positionInStack * 0.15,
-                      }}
-                    >
-                      <img
-                        src={feature.image || "/placeholder.svg"}
-                        alt={feature.title}
-                        className="w-full h-full object-cover rounded-[20px]"
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="faq" className="relative py-20 md:py-32 px-4 animate-on-scroll">
-        <div className="max-w-[800px] w-full mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-6 flex items-center justify-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
-              ЧАСТЫЕ ВОПРОСЫ
+      {/* GALLERY */}
+      <section id="gallery" className="relative py-20 md:py-32 px-4 animate-on-scroll">
+        <div className="max-w-[1120px] w-full mx-auto">
+          <div className="text-center mb-14">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#6B6560] mb-4 flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+              НАШИ ФОТО
             </div>
-            <h2 className="font-serif text-[32px] leading-[1.15] md:text-[48px] md:leading-[1.1] font-medium mb-6 text-balance">
+            <h2 className="font-serif text-[32px] md:text-[48px] font-medium mb-4">
+              Мгновения{" "}
+              <span style={{ background: "linear-gradient(135deg, #e8849a 0%, #c4a882 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                любви
+              </span>
+            </h2>
+            <p className="text-[#6B6560] text-sm flex items-center justify-center gap-2">
+              <Camera className="w-4 h-4" />
+              Нажмите на любую ячейку, чтобы добавить своё фото
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <PhotoSlot slotId="photo1" label="Фото пары" aspect="aspect-square" photos={photos} onUpload={handleUpload} className="md:col-span-2 md:row-span-2 md:aspect-auto md:h-full min-h-[200px]" />
+            <PhotoSlot slotId="photo2" label="Ваше фото" aspect="aspect-square" photos={photos} onUpload={handleUpload} />
+            <PhotoSlot slotId="photo3" label="Ваше фото" aspect="aspect-square" photos={photos} onUpload={handleUpload} />
+            <PhotoSlot slotId="photo4" label="Ваше фото" aspect="aspect-square" photos={photos} onUpload={handleUpload} />
+            <PhotoSlot slotId="photo5" label="Ваше фото" aspect="aspect-square" photos={photos} onUpload={handleUpload} />
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="relative py-20 md:py-32 px-4 animate-on-scroll bg-[#F4EFE8]">
+        <div className="max-w-[800px] w-full mx-auto">
+          <div className="text-center mb-14">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#6B6560] mb-4 flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+              ОТВЕТЫ НА ВОПРОСЫ
+            </div>
+            <h2 className="font-serif text-[32px] md:text-[48px] font-medium">
               Есть{" "}
-              <span
-                className="inline-block"
-                style={{
-                  background: "linear-gradient(135deg, #d9a7c7 0%, #fffcdc 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
+              <span style={{ background: "linear-gradient(135deg, #e8849a 0%, #c4a882 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                 вопросы
               </span>
               ?
             </h2>
-            <p className="text-[#6B6560] text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
-              Все, что нужно знать о VERDANT и нашей платформе для экологического мониторинга.
-            </p>
           </div>
-
           <div className="space-y-4">
             {[
-              {
-                question: "Как работает спутниковый мониторинг VERDANT?",
-                answer:
-                  "Наша платформа использует сеть спутников в сочетании с ИИ-алгоритмами для анализа лесного покрова в реальном времени. Мы обнаруживаем изменения площадью от 0,5 гектара в течение 24 часов, что позволяет оперативно реагировать на угрозы: незаконные вырубки или лесные пожары.",
-              },
-              {
-                question: "Какие регионы охватывает VERDANT?",
-                answer:
-                  "VERDANT сейчас ведет мониторинг более 2,4 миллиона гектаров на пяти континентах: тропические леса Амазонии, бассейн Конго, леса Борнео, сибирская тайга и тихоокеанский северо-запад Америки. Мы постоянно расширяем охват для защиты новых экосистем.",
-              },
-              {
-                question: "Насколько точна система обнаружения угроз?",
-                answer:
-                  "Наша система обнаружения угроз на базе ИИ достигает точности 99,4%. Мы используем модели машинного обучения, обученные на миллионах спутниковых снимков, чтобы отличать естественные изменения от антропогенного обезлесения или незаконной деятельности.",
-              },
-              {
-                question: "Можно ли интегрировать VERDANT с существующими системами?",
-                answer:
-                  "Да, VERDANT предоставляет полноценный API для интеграции с существующими системами управления природоохранной деятельностью, ГИС-платформами и системами оповещения. Наша документация содержит подробные руководства по внедрению.",
-              },
-              {
-                question: "Какова модель ценообразования VERDANT?",
-                answer:
-                  "Мы предлагаем многоуровневое ценообразование в зависимости от площади мониторинга и набора функций. Некоммерческие природоохранные организации могут претендовать на льготные тарифы или гранты. Свяжитесь с нами для расчета индивидуального предложения.",
-              },
-              {
-                question: "Как я могу помочь в сохранении лесов через VERDANT?",
-                answer:
-                  "Есть несколько способов: пожертвование на мониторинг незащищенных территорий, волонтерство в командах наземной верификации или корпоративное партнерство. Каждый вклад помогает защищать критически важные экосистемы.",
-              },
+              { q: "Как добраться до места?", a: "Усадьба находится в 45 км от МКАД по Новорижскому шоссе. Мы организуем трансфер от метро Строгино в 14:00 и 15:00. Адрес и схема проезда будут отправлены отдельно." },
+              { q: "Есть ли дресс-код?", a: "Мы будем рады видеть вас в нарядных, но комфортных образах. Палитра — нежные и пастельные тона. Просим воздержаться от белого и чёрного. Учтите, что часть праздника пройдёт на открытом воздухе." },
+              { q: "Можно ли привести детей?", a: "Дети — это радость! Мы будем рады малышам. На площадке будет детская зона с аниматором. Пожалуйста, укажите возраст детей при подтверждении участия." },
+              { q: "Что подарить?", a: "Самый ценный подарок для нас — ваше присутствие и тёплые слова. Если хочется сделать что-то большее — конверт со средствами на путешествие будет очень кстати." },
+              { q: "Будет ли проживание?", a: "На территории усадьбы есть несколько гостевых домиков. Если вы хотите остаться на ночь, напишите нам заранее — забронируем место специально для вас." },
             ].map((faq, i) => (
-              <div
-                key={i}
-                className="border border-black/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-black/20"
-              >
+              <div key={i} className="border border-black/10 rounded-xl overflow-hidden hover:border-pink-200 transition-all duration-300 bg-[#F9F6F1]">
                 <button
                   onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
                   className="w-full flex items-center justify-between p-6 text-left"
                 >
-                  <span className="text-base md:text-lg font-medium pr-4">{faq.question}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 flex-shrink-0 text-[#6B6560] transition-transform duration-300 ${
-                      openFaqIndex === i ? "rotate-180" : ""
-                    }`}
-                  />
+                  <span className="text-base md:text-lg font-medium pr-4">{faq.q}</span>
+                  <ChevronDown className={`w-5 h-5 flex-shrink-0 text-[#6B6560] transition-transform duration-300 ${openFaqIndex === i ? "rotate-180" : ""}`} />
                 </button>
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openFaqIndex === i ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                  }`}
-                >
-                  <p className="px-6 pb-6 text-sm md:text-base text-[#6B6560] leading-relaxed">{faq.answer}</p>
+                <div className={`overflow-hidden transition-all duration-300 ${openFaqIndex === i ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"}`}>
+                  <p className="px-6 pb-6 text-sm md:text-base text-[#6B6560] leading-relaxed">{faq.a}</p>
                 </div>
               </div>
             ))}
@@ -668,141 +426,72 @@ export default function VerdantPage() {
         </div>
       </section>
 
-      <section
-        id="cta"
-        className="relative py-24 md:py-40 px-4 animate-on-scroll overflow-hidden pt-0"
-        style={{
-          backgroundImage: `url('/earth-cta.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F9F6F1] via-[#F9F6F1]/60 to-transparent pointer-events-none" />
-        <div className="max-w-[800px] w-full mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 glass-pill px-4 py-2 rounded-full mb-8 text-xs md:text-sm text-[#6B6560]">
-            <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
-            Спасем планету
+      {/* RSVP */}
+      <section id="rsvp" className="relative py-24 md:py-40 px-4 animate-on-scroll overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-[#F9F6F1] to-rose-50 pointer-events-none" />
+        <div className="max-w-[600px] w-full mx-auto text-center relative z-10">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="h-px w-16 bg-pink-300" />
+            <Heart className="w-5 h-5 text-pink-400 fill-pink-400" />
+            <div className="h-px w-16 bg-pink-300" />
           </div>
-
-          <h2 className="font-serif text-[40px] leading-[1.15] md:text-[64px] md:leading-[1.1] font-medium mb-6 text-balance">
-            Присоединяйтесь к глобальному движению
+          <h2 className="font-serif text-[36px] md:text-[56px] font-medium mb-4 text-balance">
+            Вы придёте?
           </h2>
-          <p className="text-[#6B6560] text-base md:text-lg mb-10 leading-relaxed max-w-[560px] mx-auto">
-            Вместе мы строим устойчивое будущее. Начните защищать леса уже сегодня.
+          <p className="text-[#6B6560] text-base md:text-lg mb-10 leading-relaxed">
+            Пожалуйста, подтвердите своё участие до <strong>1 июня 2025</strong>, чтобы мы могли подготовить всё для вашего комфорта.
           </p>
 
-          <Button className="glass-button text-base rounded-full bg-black/5 border border-black/20 hover:bg-black/10 hover:border-black/30 transition-all duration-300 text-[#1A1713] px-8 py-6 md:text-base">
-            Начать сейчас
-          </Button>
+          {rsvpSent ? (
+            <div className="p-8 border border-pink-200 rounded-2xl bg-pink-50">
+              <Heart className="w-10 h-10 text-pink-400 fill-pink-400 mx-auto mb-4" />
+              <div className="font-serif text-2xl mb-2">Спасибо, {rsvpName}!</div>
+              <p className="text-[#6B6560] text-sm">Мы уже ждём встречи с вами 12 июля ✨</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4 text-left">
+              <div>
+                <label className="text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-2 block">Ваше имя</label>
+                <input
+                  type="text"
+                  value={rsvpName}
+                  onChange={(e) => setRsvpName(e.target.value)}
+                  placeholder="Иван Иванов"
+                  className="w-full px-4 py-3 bg-white border border-black/10 rounded-xl text-sm text-[#1A1713] placeholder-[#6B6560]/50 focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-200 transition-all"
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-2 block">Количество гостей</label>
+                <select
+                  value={rsvpGuests}
+                  onChange={(e) => setRsvpGuests(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/10 rounded-xl text-sm text-[#1A1713] focus:outline-none focus:border-pink-300 transition-all appearance-none"
+                >
+                  {["1", "2", "3", "4"].map((n) => (
+                    <option key={n} value={n}>{n} {n === "1" ? "гость" : n === "2" || n === "3" || n === "4" ? "гостя" : "гостей"}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => {
+                  if (rsvpName.trim()) setRsvpSent(true)
+                }}
+                className="w-full py-4 bg-[#1A1713] text-[#F9F6F1] rounded-xl text-sm font-medium hover:bg-[#2d2925] transition-all duration-300 mt-2"
+              >
+                Подтвердить участие
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      <footer className="relative px-4 border-t border-black/5 py-8">
-        <div className="max-w-[1120px] w-full mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-12">
-            {/* Brand Column */}
-            <div className="flex flex-col gap-4">
-              <div className="text-lg font-semibold font-mono">VERDANT</div>
-              <p className="text-xs text-[#6B6560] leading-relaxed">
-                Защита лесов по всему миру с помощью мониторинга в реальном времени и ИИ-технологий.
-              </p>
-              <div className="flex items-center gap-4 mt-2">
-                <a
-                  href="#"
-                  className="text-[#6B6560] hover:text-[#1A1713] transition-colors"
-                  aria-label="X (Twitter)"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="text-[#6B6560] hover:text-[#1A1713] transition-colors"
-                  aria-label="YouTube"
-                >
-                  <Youtube className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  className="text-[#6B6560] hover:text-[#1A1713] transition-colors"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Product Menu */}
-            <div className="flex flex-col gap-4">
-              <div className="text-xs uppercase tracking-[0.15em] text-[#1A1713] font-semibold mb-2">Продукт</div>
-              <div className="flex flex-col gap-3">
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  Возможности
-                </a>
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  Тарифы
-                </a>
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  Документация
-                </a>
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  API
-                </a>
-              </div>
-            </div>
-
-            {/* Company Menu */}
-            <div className="flex flex-col gap-4">
-              <div className="text-xs uppercase tracking-[0.15em] text-[#1A1713] font-semibold mb-2">Компания</div>
-              <div className="flex flex-col gap-3">
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  О нас
-                </a>
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  Блог
-                </a>
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  Карьера
-                </a>
-                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
-                  Контакты
-                </a>
-              </div>
-            </div>
-
-            {/* Newsletter Subscription */}
-            <div className="flex flex-col gap-4">
-              <div className="text-xs uppercase tracking-[0.15em] text-[#1A1713] font-semibold mb-2">Рассылка</div>
-              <p className="text-xs text-[#6B6560] mb-3">Получайте новости об экологических инициативах.</p>
-              <div className="flex flex-col gap-2">
-                <input
-                  type="email"
-                  placeholder="Введите email"
-                  className="px-4 py-2 bg-black/5 border border-black/10 rounded-lg text-xs text-[#1A1713] placeholder-[#6B6560] focus:outline-none focus:border-pink-400/50 focus:ring-1 focus:ring-pink-400/20 transition-all"
-                />
-                <button className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-pink-500/20 hover:border-pink-500/40 transition-all bg-pink-100 border-pink-200 text-pink-800">
-                  Подписаться
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Bottom */}
-          <div className="border-t border-black/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#6B6560]">
-            <div>2025 VERDANT. Все права защищены.</div>
-            <div className="flex gap-6">
-              <a href="#" className="hover:text-[#1A1713] transition-colors">
-                Политика конфиденциальности
-              </a>
-              <a href="#" className="hover:text-[#1A1713] transition-colors">
-                Условия использования
-              </a>
-              <a href="#" className="hover:text-[#1A1713] transition-colors">
-                Настройки cookie
-              </a>
-            </div>
+      {/* FOOTER */}
+      <footer className="relative px-4 border-t border-black/5 py-10 bg-[#F9F6F1]">
+        <div className="max-w-[1120px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#6B6560]">
+          <div className="font-serif text-lg text-[#1A1713]">Михаил & Анна · 12.07.2025</div>
+          <div className="flex items-center gap-2">
+            <Heart className="w-3.5 h-3.5 text-pink-400 fill-pink-400" />
+            <span>Сделано с любовью</span>
           </div>
         </div>
       </footer>
