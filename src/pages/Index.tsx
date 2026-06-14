@@ -151,8 +151,8 @@ export default function VerdantPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0B0C0F] text-[#F2F3F5] overflow-x-hidden">
-      <header className="fixed top-6 left-6 md:w-auto md:right-auto right-6 z-40 border border-white/10 backdrop-blur-md bg-[#0B0C0F]/80 rounded-[16px]">
+    <div className="relative min-h-screen bg-[#F9F6F1] text-[#1A1713] overflow-x-hidden">
+      <header className="fixed top-6 left-6 md:w-auto md:right-auto right-6 z-40 border border-black/10 backdrop-blur-md bg-[#F9F6F1]/80 rounded-[16px]">
         <div className="w-full mx-auto px-6">
           <div className="flex items-center gap-6 md:h-14 h-14">
             <button
@@ -165,31 +165,31 @@ export default function VerdantPage() {
             <nav className="hidden md:flex items-center gap-8">
               <button
                 onClick={() => scrollToSection("metrics")}
-                className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors duration-300"
+                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
               >
                 Результаты
               </button>
               <button
                 onClick={() => scrollToSection("map")}
-                className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors duration-300"
+                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
               >
                 Проекты
               </button>
               <button
                 onClick={() => scrollToSection("narrative")}
-                className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors duration-300"
+                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
               >
                 Технологии
               </button>
               <button
                 onClick={() => scrollToSection("faq")}
-                className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors duration-300"
+                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
               >
                 Вопросы
               </button>
               <button
                 onClick={() => scrollToSection("cta")}
-                className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors duration-300"
+                className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors duration-300"
               >
                 Участвовать
               </button>
@@ -197,7 +197,7 @@ export default function VerdantPage() {
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden ml-auto p-2 hover:bg-white/5 rounded-lg transition-colors duration-300"
+              className="md:hidden ml-auto p-2 hover:bg-black/5 rounded-lg transition-colors duration-300"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -207,35 +207,35 @@ export default function VerdantPage() {
       </header>
 
       {isMenuOpen && (
-        <div className="fixed inset-0 bg-[#0B0C0F]/95 backdrop-blur-md z-50 flex flex-col items-start justify-end pb-20 pt-20 px-6">
+        <div className="fixed inset-0 bg-[#F9F6F1]/95 backdrop-blur-md z-50 flex flex-col items-start justify-end pb-20 pt-20 px-6">
           <div className="flex flex-col gap-8 items-start text-left w-full">
             <button
               onClick={() => scrollToSection("metrics")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#F2F3F5] hover:text-pink-400 transition-colors duration-300"
+              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
             >
               Результаты
             </button>
             <button
               onClick={() => scrollToSection("map")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#F2F3F5] hover:text-pink-400 transition-colors duration-300"
+              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
             >
               Проекты
             </button>
             <button
               onClick={() => scrollToSection("narrative")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#F2F3F5] hover:text-pink-400 transition-colors duration-300"
+              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
             >
               Технологии
             </button>
             <button
               onClick={() => scrollToSection("faq")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#F2F3F5] hover:text-pink-400 transition-colors duration-300"
+              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
             >
               Вопросы
             </button>
             <button
               onClick={() => scrollToSection("cta")}
-              className="font-serif text-5xl md:text-7xl font-light text-[#F2F3F5] hover:text-pink-400 transition-colors duration-300"
+              className="font-serif text-5xl md:text-7xl font-light text-[#1A1713] hover:text-pink-500 transition-colors duration-300"
             >
               Участвовать
             </button>
@@ -263,7 +263,7 @@ export default function VerdantPage() {
           }}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0F] via-[#0B0C0F]/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F9F6F1] via-[#F9F6F1]/70 to-transparent pointer-events-none" />
 
         <div
           className="max-w-[1120px] w-full mx-auto relative z-10"
@@ -285,13 +285,13 @@ export default function VerdantPage() {
               </span>
             </h1>
             <p
-              className="text-[#A7ABB3] text-base md:text-lg max-w-[520px] mx-auto mb-8 leading-relaxed stagger-reveal text-white"
+              className="text-[#6B6560] text-base md:text-lg max-w-[520px] mx-auto mb-8 leading-relaxed stagger-reveal"
               style={{ animationDelay: "180ms" }}
             >
               Мониторинг лесов в реальном времени с помощью ИИ. Обнаружение угроз, отслеживание биоразнообразия, сохранение природы для будущих поколений.
             </p>
             <div className="stagger-reveal" style={{ animationDelay: "270ms" }}>
-              <Button className="glass-button px-8 py-6 text-base rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-white">
+              <Button className="glass-button px-8 py-6 text-base rounded-full bg-black/5 border border-black/10 hover:bg-black/10 hover:border-black/20 transition-all duration-300 text-[#1A1713]">
                 Начать защиту
               </Button>
             </div>
@@ -318,9 +318,9 @@ export default function VerdantPage() {
         </div>
       </section>
 
-      <section className="relative py-12 border-y border-white/5 bg-[#0B0C0F] overflow-hidden md:py-8 md:pt-8 md:pb-4">
+      <section className="relative py-12 border-y border-black/5 bg-[#F9F6F1] overflow-hidden md:py-8 md:pt-8 md:pb-4">
         <div className="w-full">
-          <p className="text-center text-xs md:text-sm uppercase tracking-[0.2em] text-[#A7ABB3] mb-8">
+          <p className="text-center text-xs md:text-sm uppercase tracking-[0.2em] text-[#6B6560] mb-8">
             Нам доверяют ведущие природоохранные организации
           </p>
           <div className="logo-marquee">
@@ -347,7 +347,7 @@ export default function VerdantPage() {
                   <img
                     src={logo || "/placeholder.svg"}
                     alt={`Логотип партнера ${i + 1}`}
-                    className="h-32 md:h-24 w-auto object-contain opacity-60 hover:opacity-60 transition-all duration-300 brightness-0 invert"
+                    className="h-32 md:h-24 w-auto object-contain opacity-60 hover:opacity-60 transition-all duration-300 brightness-0"
                   />
                 </div>
               ))}
@@ -374,7 +374,7 @@ export default function VerdantPage() {
             в масштабе
           </h2>
 
-          <p className="text-[#A7ABB3] text-sm md:text-base mb-12 md:mb-16 text-center max-w-[600px] mx-auto leading-relaxed">
+          <p className="text-[#6B6560] text-sm md:text-base mb-12 md:mb-16 text-center max-w-[600px] mx-auto leading-relaxed">
             Нам доверяют природоохранные организации по всему миру. Работаем на технологиях, созданных для природы.
           </p>
 
@@ -387,36 +387,36 @@ export default function VerdantPage() {
             ].map((metric, i) => (
               <div
                 key={i}
-                className="p-6 md:p-10 text-center border border-white/10 border-t-0 border-b border-l-0 border-r-0 md:py-10 md:pb-20"
+                className="p-6 md:p-10 text-center border border-black/10 border-t-0 border-b border-l-0 border-r-0 md:py-10 md:pb-20"
               >
                 <div
-                  className={`text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#A7ABB3] mb-4 flex items-center justify-center gap-2`}
+                  className={`text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-4 flex items-center justify-center gap-2`}
                 >
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${metric.color === "pink" ? "bg-pink-400/60" : "bg-purple-400/60"}`}
+                    className={`w-1.5 h-1.5 rounded-full ${metric.color === "pink" ? "bg-pink-500/60" : "bg-purple-500/60"}`}
                   />
                   {metric.label}
                 </div>
                 <div className="font-serif text-[48px] md:text-[72px] leading-none font-medium">
                   <AnimatedCounter value={metric.value} />
                 </div>
-                <div className="text-[11px] md:text-xs text-[#A7ABB3] mt-3">{metric.desc}</div>
+                <div className="text-[11px] md:text-xs text-[#6B6560] mt-3">{metric.desc}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="map" className="relative py-20 md:py-32 animate-on-scroll bg-[#0B0C0F]">
+      <section id="map" className="relative py-20 md:py-32 animate-on-scroll bg-[#F9F6F1]">
         <div className="text-center mb-12 md:mb-16 px-4">
-          <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#A7ABB3] mb-6 flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+          <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-6 flex items-center justify-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
             ГЛОБАЛЬНЫЙ ОХВАТ
           </div>
           <h2 className="font-serif text-[32px] leading-[1.15] md:text-[48px] md:leading-[1.1] font-medium mb-6 text-balance">
             Проекты по всему миру
           </h2>
-          <p className="text-[#A7ABB3] text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
+          <p className="text-[#6B6560] text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
             Мониторинг и защита критически важных лесных экосистем на пяти континентах
           </p>
         </div>
@@ -432,8 +432,8 @@ export default function VerdantPage() {
         <div className="max-w-[1120px] w-full mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-stretch">
             <div className="max-w-[720px]">
-              <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#A7ABB3] mb-6 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+              <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-6 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
                 ТЕХНОЛОГИИ СОХРАНЕНИЯ
               </div>
               <h2 className="font-serif text-[36px] leading-[1.15] md:text-[56px] md:leading-[1.1] font-medium mb-8 text-balance">
@@ -450,7 +450,7 @@ export default function VerdantPage() {
                   важна
                 </span>
               </h2>
-              <p className="text-[#A7ABB3] text-base md:text-lg leading-relaxed mb-12">
+              <p className="text-[#6B6560] text-base md:text-lg leading-relaxed mb-12">
                 Наши спутниковые и ИИ-технологии отслеживают биоразнообразие, выявляют незаконные вырубки, анализируют паттерны обезлесения и оповещают команды в реальном времени. Сохранение со скоростью, которую требует природа.
               </p>
 
@@ -511,7 +511,7 @@ export default function VerdantPage() {
                       }, 300)
                     }}
                     className={`relative w-full text-left flex gap-4 items-start p-5 transition-all duration-300 rounded-xs py-4 overflow-hidden ${
-                      selectedFeature === i ? "border border-white/20" : "border border-white/10"
+                      selectedFeature === i ? "border border-black/20 bg-white/40" : "border border-black/10"
                     }`}
                   >
                     <feature.icon
@@ -521,11 +521,11 @@ export default function VerdantPage() {
                     />
                     <div className="flex-1">
                       <h3 className="text-base md:text-lg font-medium mb-1">{feature.title}</h3>
-                      <p className="text-sm md:text-base text-[#A7ABB3]">{feature.desc}</p>
+                      <p className="text-sm md:text-base text-[#6B6560]">{feature.desc}</p>
                     </div>
                     {selectedFeature === i && (
-                      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10">
-                        <div className="h-full bg-white progress-bar" />
+                      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/10">
+                        <div className="h-full bg-pink-400 progress-bar" />
                       </div>
                     )}
                   </button>
@@ -583,8 +583,8 @@ export default function VerdantPage() {
       <section id="faq" className="relative py-20 md:py-32 px-4 animate-on-scroll">
         <div className="max-w-[800px] w-full mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#A7ABB3] mb-6 flex items-center justify-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+            <div className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-[#6B6560] mb-6 flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
               ЧАСТЫЕ ВОПРОСЫ
             </div>
             <h2 className="font-serif text-[32px] leading-[1.15] md:text-[48px] md:leading-[1.1] font-medium mb-6 text-balance">
@@ -602,7 +602,7 @@ export default function VerdantPage() {
               </span>
               ?
             </h2>
-            <p className="text-[#A7ABB3] text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
+            <p className="text-[#6B6560] text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
               Все, что нужно знать о VERDANT и нашей платформе для экологического мониторинга.
             </p>
           </div>
@@ -642,7 +642,7 @@ export default function VerdantPage() {
             ].map((faq, i) => (
               <div
                 key={i}
-                className="border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-white/20"
+                className="border border-black/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-black/20"
               >
                 <button
                   onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
@@ -650,7 +650,7 @@ export default function VerdantPage() {
                 >
                   <span className="text-base md:text-lg font-medium pr-4">{faq.question}</span>
                   <ChevronDown
-                    className={`w-5 h-5 flex-shrink-0 text-[#A7ABB3] transition-transform duration-300 ${
+                    className={`w-5 h-5 flex-shrink-0 text-[#6B6560] transition-transform duration-300 ${
                       openFaqIndex === i ? "rotate-180" : ""
                     }`}
                   />
@@ -660,7 +660,7 @@ export default function VerdantPage() {
                     openFaqIndex === i ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
-                  <p className="px-6 pb-6 text-sm md:text-base text-[#A7ABB3] leading-relaxed">{faq.answer}</p>
+                  <p className="px-6 pb-6 text-sm md:text-base text-[#6B6560] leading-relaxed">{faq.answer}</p>
                 </div>
               </div>
             ))}
@@ -678,39 +678,39 @@ export default function VerdantPage() {
           backgroundAttachment: "fixed",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0C0F] via-[#0B0C0F]/60 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F9F6F1] via-[#F9F6F1]/60 to-transparent pointer-events-none" />
         <div className="max-w-[800px] w-full mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 glass-pill px-4 py-2 rounded-full mb-8 text-xs md:text-sm text-[#A7ABB3]">
-            <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 glass-pill px-4 py-2 rounded-full mb-8 text-xs md:text-sm text-[#6B6560]">
+            <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
             Спасем планету
           </div>
 
           <h2 className="font-serif text-[40px] leading-[1.15] md:text-[64px] md:leading-[1.1] font-medium mb-6 text-balance">
             Присоединяйтесь к глобальному движению
           </h2>
-          <p className="text-[#A7ABB3] text-base md:text-lg mb-10 leading-relaxed max-w-[560px] mx-auto">
+          <p className="text-[#6B6560] text-base md:text-lg mb-10 leading-relaxed max-w-[560px] mx-auto">
             Вместе мы строим устойчивое будущее. Начните защищать леса уже сегодня.
           </p>
 
-          <Button className="glass-button text-base rounded-full bg-white/5 border border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300 text-white px-8 py-6 md:text-base">
+          <Button className="glass-button text-base rounded-full bg-black/5 border border-black/20 hover:bg-black/10 hover:border-black/30 transition-all duration-300 text-[#1A1713] px-8 py-6 md:text-base">
             Начать сейчас
           </Button>
         </div>
       </section>
 
-      <footer className="relative px-4 border-t border-white/5 py-8">
+      <footer className="relative px-4 border-t border-black/5 py-8">
         <div className="max-w-[1120px] w-full mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-12">
             {/* Brand Column */}
             <div className="flex flex-col gap-4">
               <div className="text-lg font-semibold font-mono">VERDANT</div>
-              <p className="text-xs text-[#A7ABB3] leading-relaxed">
+              <p className="text-xs text-[#6B6560] leading-relaxed">
                 Защита лесов по всему миру с помощью мониторинга в реальном времени и ИИ-технологий.
               </p>
               <div className="flex items-center gap-4 mt-2">
                 <a
                   href="#"
-                  className="text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors"
+                  className="text-[#6B6560] hover:text-[#1A1713] transition-colors"
                   aria-label="X (Twitter)"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -719,14 +719,14 @@ export default function VerdantPage() {
                 </a>
                 <a
                   href="#"
-                  className="text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors"
+                  className="text-[#6B6560] hover:text-[#1A1713] transition-colors"
                   aria-label="YouTube"
                 >
                   <Youtube className="w-4 h-4" />
                 </a>
                 <a
                   href="#"
-                  className="text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors"
+                  className="text-[#6B6560] hover:text-[#1A1713] transition-colors"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-4 h-4" />
@@ -736,18 +736,18 @@ export default function VerdantPage() {
 
             {/* Product Menu */}
             <div className="flex flex-col gap-4">
-              <div className="text-xs uppercase tracking-[0.15em] text-[#F2F3F5] font-semibold mb-2">Продукт</div>
+              <div className="text-xs uppercase tracking-[0.15em] text-[#1A1713] font-semibold mb-2">Продукт</div>
               <div className="flex flex-col gap-3">
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   Возможности
                 </a>
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   Тарифы
                 </a>
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   Документация
                 </a>
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   API
                 </a>
               </div>
@@ -755,18 +755,18 @@ export default function VerdantPage() {
 
             {/* Company Menu */}
             <div className="flex flex-col gap-4">
-              <div className="text-xs uppercase tracking-[0.15em] text-[#F2F3F5] font-semibold mb-2">Компания</div>
+              <div className="text-xs uppercase tracking-[0.15em] text-[#1A1713] font-semibold mb-2">Компания</div>
               <div className="flex flex-col gap-3">
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   О нас
                 </a>
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   Блог
                 </a>
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   Карьера
                 </a>
-                <a href="#" className="text-sm text-[#A7ABB3] hover:text-[#F2F3F5] transition-colors">
+                <a href="#" className="text-sm text-[#6B6560] hover:text-[#1A1713] transition-colors">
                   Контакты
                 </a>
               </div>
@@ -774,15 +774,15 @@ export default function VerdantPage() {
 
             {/* Newsletter Subscription */}
             <div className="flex flex-col gap-4">
-              <div className="text-xs uppercase tracking-[0.15em] text-[#F2F3F5] font-semibold mb-2">Рассылка</div>
-              <p className="text-xs text-[#A7ABB3] mb-3">Получайте новости об экологических инициативах.</p>
+              <div className="text-xs uppercase tracking-[0.15em] text-[#1A1713] font-semibold mb-2">Рассылка</div>
+              <p className="text-xs text-[#6B6560] mb-3">Получайте новости об экологических инициативах.</p>
               <div className="flex flex-col gap-2">
                 <input
                   type="email"
                   placeholder="Введите email"
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-[#F2F3F5] placeholder-[#A7ABB3] focus:outline-none focus:border-pink-400/50 focus:ring-1 focus:ring-pink-400/20 transition-all"
+                  className="px-4 py-2 bg-black/5 border border-black/10 rounded-lg text-xs text-[#1A1713] placeholder-[#6B6560] focus:outline-none focus:border-pink-400/50 focus:ring-1 focus:ring-pink-400/20 transition-all"
                 />
-                <button className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-pink-500/30 hover:border-pink-500/50 transition-all bg-green-800 border-green-700 text-white">
+                <button className="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-pink-500/20 hover:border-pink-500/40 transition-all bg-pink-100 border-pink-200 text-pink-800">
                   Подписаться
                 </button>
               </div>
@@ -790,16 +790,16 @@ export default function VerdantPage() {
           </div>
 
           {/* Footer Bottom */}
-          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#A7ABB3]">
+          <div className="border-t border-black/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#6B6560]">
             <div>2025 VERDANT. Все права защищены.</div>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-[#F2F3F5] transition-colors">
+              <a href="#" className="hover:text-[#1A1713] transition-colors">
                 Политика конфиденциальности
               </a>
-              <a href="#" className="hover:text-[#F2F3F5] transition-colors">
+              <a href="#" className="hover:text-[#1A1713] transition-colors">
                 Условия использования
               </a>
-              <a href="#" className="hover:text-[#F2F3F5] transition-colors">
+              <a href="#" className="hover:text-[#1A1713] transition-colors">
                 Настройки cookie
               </a>
             </div>
